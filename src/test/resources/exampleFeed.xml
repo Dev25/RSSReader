@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss>
+    <channel>
+        <title>Example Feed</title>
+        <link>http://www.example.com</link>
+        <description>The latest stories from ...</description>
+        <language>en-gb</language>
+        <pubDate>Wed, 1 Jul 2015 15:00:00 GMT</pubDate>
+        <copyright>Copyright: (C) Foobar</copyright>
+        <image>
+            <url>http://example.com/foobar.png</url>
+            <title>Title Here</title>
+            <link>http://example.com/foo</link>
+        </image>
+        <ttl>15</ttl>
+        <item>
+            <title>Item 1</title>
+            <description>Description 1</description>
+            <link>Link 1</link>
+        </item>
+    </channel>
+</rss>
