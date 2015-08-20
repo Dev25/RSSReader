@@ -7,9 +7,14 @@ import scala.xml.{NodeSeq, XML}
 
 import org.scalactic.Accumulation._
 import org.scalactic._
+import play.api.libs.json.Json
+import reactivemongo.bson.BSONObjectID
 import rssreader.core.XMLExtensions._
+import play.modules.reactivemongo.json.ImplicitBSONHandlers.BSONObjectIDFormat
 
-case class Feed(title: String,
+case class Feed(_id: BSONObjectID,
+                rssUrl: Option[String],
+                title: String,
                 link: String,
                 description: String,
                 items: Seq[FeedItem],
@@ -18,18 +23,21 @@ case class Feed(title: String,
                 image: Option[FeedImage])
 
 object Feed {
+  implicit val fmt = Json.format[Feed]
 
-  def apply(u: URL): Or[Feed, Every[ErrorMessage]] = parse(XML.load(u))
-  def apply(s: String): Or[Feed, Every[ErrorMessage]] = parse(XML.loadString(s))
+  def parse(u: URL): Or[Feed, Every[ErrorMessage]] = parse(Some(u.toString), XML.load(u))
+  def parse(s: String): Or[Feed, Every[ErrorMessage]] = parse(None, XML.loadString(s))
 
   /**
    * Parse and validate a RSS feed from a xml node, either returning the created Feed
    * or a list of error messages (required text or malformed text) including error messages
    * for when parsing feed items.
    */
-  def parse(root: NodeSeq): Or[Feed, Every[ErrorMessage]] = {
+  def parse(url: Option[String], root: NodeSeq): Or[Feed, Every[ErrorMessage]] = {
     val node = root \ "channel"
     withGood(
+      Good(BSONObjectID.generate),
+      Good(url),
       (node \ "title").requiredText("Missing feed title"),
       (node \ "link").requiredText("Missing feed link"),
       (node \ "description").requiredText("Missing feed description"),
@@ -40,6 +48,12 @@ object Feed {
         (Good(None): Or[Option[FeedImage], Every[ErrorMessage]]) // Return None
         (result => result.map(Some.apply)) // Convert to Some()
     )(Feed.apply)
+  }
+
+  def parseItems(u: URL): Or[Seq[FeedItem], Every[ErrorMessage]] = {
+    val root = XML.load(u)
+    val node = root \ "channel"
+    (node \\ "item").map(FeedItem.parse).combined
   }
 
 }

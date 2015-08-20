@@ -4,6 +4,7 @@ import scala.xml.NodeSeq
 
 import org.scalactic.Accumulation._
 import org.scalactic.{ErrorMessage, Every, Or}
+import play.api.libs.json.Json
 import rssreader.core.XMLExtensions._
 
 case class FeedImage(url: String,
@@ -13,11 +14,8 @@ case class FeedImage(url: String,
                      height: Option[Int])
 
 object FeedImage {
-  def apply(node: NodeSeq) = parse(node)
+  implicit val fmt = Json.format[FeedImage]
 
-  /**
-   * Parse and validate a FeedImage for a Feed.
-   */
   def parse(node: NodeSeq): Or[FeedImage, Every[ErrorMessage]] = {
     withGood(
       (node \ "url").requiredText("Missing feed image url"),

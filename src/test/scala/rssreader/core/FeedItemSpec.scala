@@ -24,7 +24,7 @@ class FeedItemSpec extends FlatSpec with Matchers {
         |</item>
       """.stripMargin
 
-    val result = FeedItem(str)
+    val result = FeedItem.parse(XML.loadString(str))
     result shouldBe 'good
     result.get should have(
       'title ("Item Title"),
@@ -49,7 +49,7 @@ class FeedItemSpec extends FlatSpec with Matchers {
         |</item>
       """.stripMargin
 
-    FeedItem(str) shouldBe 'good
+    FeedItem.parse(XML.loadString(str)) shouldBe 'good
   }
 
   it should "parse from xml NodeSeq" in {
@@ -63,9 +63,8 @@ class FeedItemSpec extends FlatSpec with Matchers {
         |  <pubDate>Thu, 1 Jan 2015 12:00:00 GMT</pubDate>
         |</item>
       """.stripMargin
-    val node = XML.loadString(str)
 
-    FeedItem(node) shouldBe 'good
+    FeedItem.parse(XML.loadString(str)) shouldBe 'good
   }
 
   behavior of "Parsing invalid RSS"
