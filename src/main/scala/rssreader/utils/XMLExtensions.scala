@@ -1,11 +1,11 @@
-package rssreader.core
+package rssreader.utils
 
 import java.time.LocalDateTime
 import java.time.format.{DateTimeFormatter, DateTimeParseException}
 
 import scala.xml.NodeSeq
 
-import org.scalactic.{Bad, ErrorMessage, Every, Good, One, Or}
+import org.scalactic._
 
 object XMLExtensions {
 

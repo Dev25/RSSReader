@@ -15,7 +15,6 @@ class FeedSpec extends FlatSpec with Matchers {
     val result = Feed.parse(url)
     result shouldBe 'good
     result.get should have(
-      'rssUrl (Some(url.toString)),
       'title ("Example Feed"),
       'link ("http://www.example.com"),
       'description ("The latest stories from ..."),
@@ -29,7 +28,7 @@ class FeedSpec extends FlatSpec with Matchers {
     val result = Feed.parse(getClass.getResource("/minimalFeed.xml"))
     result shouldBe 'good
     result.get should have(
-      'title ("Example Feed"),
+      'title ("Minimal Feed"),
       'link ("http://www.example.com"),
       'description ("The latest stories from ..."),
       'items (Nil),

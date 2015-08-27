@@ -7,7 +7,8 @@ import scala.xml._
 import org.scalactic.Accumulation._
 import org.scalactic._
 import play.api.libs.json.Json
-import rssreader.core.XMLExtensions._
+import rssreader.utils.XMLExtensions
+import XMLExtensions._
 
 case class FeedItem(title: String,
                     link: String,

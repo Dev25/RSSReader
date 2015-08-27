@@ -13,6 +13,7 @@ libraryDependencies ++= Seq(
   "org.scala-lang.modules" %% "scala-xml" % "1.0.4",
   "org.scalatest" %% "scalatest" % "2.2.5" % "test",
   "org.scalactic" %% "scalactic" % "2.2.5",
+  "org.mockito" % "mockito-core" % "1.10.19",
   "org.reactivemongo" %% "reactivemongo" % "0.11.6",
   "org.reactivemongo" %% "play2-reactivemongo" % "0.11.6.play24",
   "org.reactivemongo" %% "reactivemongo-extensions-json" % "0.11.6.play24",
@@ -29,6 +30,4 @@ scalacOptions ++= Seq(
   "-Xlint",
   "-Yno-adapted-args",
   "-Ywarn-dead-code"
-  //"-Ywarn-numeric-widen"
-  //"-Ywarn-value-discard"
 )

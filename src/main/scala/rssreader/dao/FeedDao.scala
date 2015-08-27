@@ -6,7 +6,7 @@ import scala.concurrent.Future
 import com.typesafe.scalalogging.LazyLogging
 import play.api.libs.json.{JsObject, Json}
 import play.modules.reactivemongo.json.ImplicitBSONHandlers._
-import reactivemongo.api.DB
+import reactivemongo.api.{ReadPreference, DB}
 import reactivemongo.api.commands.UpdateWriteResult
 import reactivemongo.api.indexes.{Index, IndexType}
 import reactivemongo.bson.BSONObjectID
@@ -17,10 +17,12 @@ import rssreader.core.{Feed, FeedItem}
 class FeedDao(db: DB) extends JsonDao[Feed, BSONObjectID](db, "feeds") with LazyLogging {
 
   override def autoIndexes = Seq(
-    Index(Seq("url" -> IndexType.Ascending), unique = true, background = true, sparse = true)
+    Index(Seq("rssUrl" -> IndexType.Ascending), unique = true, background = true, sparse = true)
   )
 
-  def count(): Future[Int] = count($empty)
+  def exists(id: BSONObjectID): Future[Boolean] = count($id(id)).map(_ == 1)
+
+  def exists(url: String): Future[Boolean] = count("rssUrl" $eq url).map(_ == 1)
 
   def findId(url: String): Future[Option[BSONObjectID]] = findOne("rssUrl" $eq url).map(_.map(_._id))
 
@@ -32,7 +34,7 @@ class FeedDao(db: DB) extends JsonDao[Feed, BSONObjectID](db, "feeds") with Lazy
 
   def update(feed: Feed) = updateById(feed._id, feed)
 
-  def insertItems(id: BSONObjectID, items: Seq[FeedItem]) = {
+  def insertItems(id: BSONObjectID, items: Seq[FeedItem]): Future[UpdateWriteResult] = {
     collection.update(
       selector = $id(id),
       update = Json.obj("$addToSet" -> Json.obj("items" -> Json.obj("$each" -> Json.toJson(items))))
