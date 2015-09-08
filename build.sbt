@@ -19,7 +19,9 @@ libraryDependencies ++= Seq(
   "org.reactivemongo" %% "reactivemongo-extensions-json" % "0.11.6.play24",
   "com.typesafe.play" %% "play-json" % "2.4.2",
   "ch.qos.logback" % "logback-classic" % "1.1.3",
-  "com.typesafe.scala-logging" %% "scala-logging" % "3.1.0"
+  "com.typesafe.scala-logging" %% "scala-logging" % "3.1.0",
+  "com.typesafe.akka" %% "akka-actor" % "2.4.0-RC1",
+  "com.typesafe.akka" %% "akka-testkit" % "2.4.0-RC1"
 )
 
 scalacOptions ++= Seq(

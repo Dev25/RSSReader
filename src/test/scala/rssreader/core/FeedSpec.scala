@@ -5,14 +5,14 @@ import java.time.LocalDateTime
 import scala.io.Source
 
 import org.scalatest._
+import rssreader.utils.tests.TestSpec
 
-class FeedSpec extends FlatSpec with Matchers {
+class FeedSpec extends TestSpec {
 
   behavior of "Parsing valid RSS"
 
   it should "correctly parse fields" in {
-    val url = getClass.getResource("/exampleFeed.xml")
-    val result = Feed.parse(url)
+    val result = Feed.parse(fileExampleFeed)
     result shouldBe 'good
     result.get should have(
       'title ("Example Feed"),
@@ -25,7 +25,7 @@ class FeedSpec extends FlatSpec with Matchers {
   }
 
   it should "ignore optional fields when empty" in {
-    val result = Feed.parse(getClass.getResource("/minimalFeed.xml"))
+    val result = Feed.parse(fileMinimalFeed)
     result shouldBe 'good
     result.get should have(
       'title ("Minimal Feed"),
@@ -38,16 +38,16 @@ class FeedSpec extends FlatSpec with Matchers {
   }
 
   it should "create from url pointing to xml" in {
-    Feed.parse(getClass.getResource("/exampleFeed.xml")) shouldBe 'good
+    Feed.parse(fileExampleFeed) shouldBe 'good
   }
 
   it should "create from xml string" in {
-    val str = Source.fromURL(getClass.getResource("/exampleFeed.xml")).mkString
+    val str = Source.fromURL(fileExampleFeed).mkString
     Feed.parse(str) shouldBe 'good
   }
 
   it should "parse all child items" in {
-    val result = Feed.parse(getClass.getResource("/multipleItemFeed.xml"))
+    val result = Feed.parse(fileMultipleItemFeed)
     result.get.items should have size 2
   }
 

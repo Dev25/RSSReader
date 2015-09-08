@@ -2,11 +2,9 @@ package rssreader.service
 
 import java.net.URL
 
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{ExecutionContext, Future}
 
 import com.typesafe.scalalogging.LazyLogging
-import org.scalactic.{Every, Or, ErrorMessage}
 import play.api.libs.json._
 import play.modules.reactivemongo.json.ImplicitBSONHandlers._
 import reactivemongo.bson.BSONObjectID
@@ -14,28 +12,27 @@ import rssreader.core.Feed
 import rssreader.dao.FeedDao
 import rssreader.utils.MongoContext
 
-object FeedService extends FeedService
-
 class FeedService extends LazyLogging {
   val dao = new FeedDao(MongoContext.db)
 
-  def count(): Future[Int] = dao.count()
+  def count()(implicit ec: ExecutionContext): Future[Int] = dao.count()
 
-  def exists(id: BSONObjectID): Future[Boolean] = dao.exists(id)
-  def exists(url: String): Future[Boolean] = dao.exists(url)
+  def exists(id: BSONObjectID)(implicit ec: ExecutionContext): Future[Boolean] = dao.exists(id)
+  def exists(url: String)(implicit ec: ExecutionContext): Future[Boolean] = dao.exists(url)
 
-  def findAll(): Future[List[Feed]] = dao.findAll()
-  def findById(id: BSONObjectID): Future[Option[Feed]] = dao.findById(id)
-  def findByUrl(url: String): Future[Option[Feed]] = dao.findByUrl(url)
-  def findByTitle(title: String): Future[Option[Feed]] = dao.findByTitle(title)
+  def findAll()(implicit ec: ExecutionContext): Future[List[Feed]] = dao.findAll()
+  def findAllIds()(implicit ec: ExecutionContext): Future[List[BSONObjectID]] = dao.findAllIds()
+  def findById(id: BSONObjectID)(implicit ec: ExecutionContext): Future[Option[Feed]] = dao.findById(id)
+  def findByUrl(url: String)(implicit ec: ExecutionContext): Future[Option[Feed]] = dao.findByUrl(url)
+  def findByTitle(title: String)(implicit ec: ExecutionContext): Future[Option[Feed]] = dao.findByTitle(title)
 
   /**
    * Parse and save a new RSS feed
    * @param url Feed url
    * @return Future containing parsed Feed as Option or None if parsing failed
    */
-  def saveFeed(url: URL): Future[Option[Feed]] = {
-    //logger.info(s"Saving a new feed:$url")
+  def saveFeed(url: URL)(implicit ec: ExecutionContext): Future[Option[Feed]] = {
+    logger.debug(s"Saving a new feed:$url")
     Feed.parse(url).fold(
       feed => {
         val future = dao.save(feed)
@@ -43,7 +40,7 @@ class FeedService extends LazyLogging {
         future.map(_ => Some(feed))
       },
       errors => {
-        logger.error(s"Failed to parse a new feed:$url\n$errors")
+        logger.warn(s"Failed to parse a new feed [$url,$errors]")
         Future.successful(None)
       }
     )
@@ -54,10 +51,11 @@ class FeedService extends LazyLogging {
    * @param id Feed id
    * @return true if update succeeded or false if it failed, wrapped in a Future
    */
-  def updateFeed(id: BSONObjectID): Future[Boolean] = {
-    //logger.info(s"Updating feed:$id")
+  def updateFeed(id: BSONObjectID)(implicit ec: ExecutionContext): Future[Boolean] = {
+    logger.debug(s"Attempting to update feed:$id")
     dao.findById(id).flatMap {
       case Some(feed) =>
+        logger.debug(s"Updating Feed[ID:$id,Source:${feed.rssUrl}]")
           Feed.parse(new URL(feed.rssUrl), feed._id).map { updated =>
 
             // Remove items key from json, we don't want to overwrite that array
@@ -78,12 +76,21 @@ class FeedService extends LazyLogging {
   }
 
   /**
+   * Update all existing feeds
+   * @return true if all feeds were updated successfully otherwise false
+   */
+  def updateAllFeeds()(implicit ec: ExecutionContext): Future[Boolean]  = {
+    logger.debug("Updating all feeds...")
+    dao.findAllIds().flatMap(ids => Future.sequence(ids.map(updateFeed)).map(_.forall(_ == true)))
+  }
+
+  /**
    * Delete a feed
    * @param id Feed id
    * @return true if feed deleted otherwise false
    */
-  def deleteFeed(id: BSONObjectID): Future[Boolean] = {
-    //logger.info(s"Deleting Feed: $id")
+  def deleteFeed(id: BSONObjectID)(implicit ec: ExecutionContext): Future[Boolean] = {
+    logger.debug(s"Deleting Feed: $id")
     dao.removeById(id).map(_.n == 1)
   }
 

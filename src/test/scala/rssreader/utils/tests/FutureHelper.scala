@@ -1,4 +1,4 @@
-package rssreader.utils
+package rssreader.utils.tests
 
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.time.SpanSugar._

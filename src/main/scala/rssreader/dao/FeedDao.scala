@@ -1,7 +1,7 @@
 package rssreader.dao
 
+import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 
 import com.typesafe.scalalogging.LazyLogging
 import play.api.libs.json.{JsObject, Json}
@@ -20,37 +20,45 @@ class FeedDao(db: DB) extends JsonDao[Feed, BSONObjectID](db, "feeds") with Lazy
     Index(Seq("rssUrl" -> IndexType.Ascending), unique = true, background = true, sparse = true)
   )
 
-  def exists(id: BSONObjectID): Future[Boolean] = count($id(id)).map(_ == 1)
+  def exists(id: BSONObjectID)(implicit ec: ExecutionContext): Future[Boolean] = count($id(id)).map(_ == 1)
 
-  def exists(url: String): Future[Boolean] = count("rssUrl" $eq url).map(_ == 1)
+  def exists(url: String)(implicit ec: ExecutionContext): Future[Boolean] = count("rssUrl" $eq url).map(_ == 1)
 
-  def findId(url: String): Future[Option[BSONObjectID]] = findOne("rssUrl" $eq url).map(_.map(_._id))
+  def findId(url: String)(implicit ec: ExecutionContext): Future[Option[BSONObjectID]] = findOne("rssUrl" $eq url).map(_.map(_._id))
 
-  def findByUrl(url: String): Future[Option[Feed]] = findOne("rssUrl" $eq url)
+  def findAllIds()(implicit ec: ExecutionContext): Future[List[BSONObjectID]] = {
+    collection.find(
+      selector = $empty,
+      projection = Json.obj("_id" -> 1))
+    .cursor[BSONObjectID](ReadPreference.primary)
+    .collect[List]()
+  }
 
-  def findByTitle(title: String): Future[Option[Feed]] = findOne("title" $eq title)
+  def findByUrl(url: String)(implicit ec: ExecutionContext): Future[Option[Feed]] = findOne("rssUrl" $eq url)
 
-  def findByLink(link: String): Future[Option[Feed]] = findOne("link" $eq link)
+  def findByTitle(title: String)(implicit ec: ExecutionContext): Future[Option[Feed]] = findOne("title" $eq title)
 
-  def update(feed: Feed) = updateById(feed._id, feed)
+  def findByLink(link: String)(implicit ec: ExecutionContext): Future[Option[Feed]] = findOne("link" $eq link)
 
-  def insertItems(id: BSONObjectID, items: Seq[FeedItem]): Future[UpdateWriteResult] = {
+  def update(feed: Feed)(implicit ec: ExecutionContext) = updateById(feed._id, feed)
+
+  def insertItems(id: BSONObjectID, items: Seq[FeedItem])(implicit ec: ExecutionContext): Future[UpdateWriteResult] = {
     collection.update(
       selector = $id(id),
       update = Json.obj("$addToSet" -> Json.obj("items" -> Json.obj("$each" -> Json.toJson(items))))
     )
   }
 
-  def getItems(id: BSONObjectID): Future[List[FeedItem]] =
+  def getItems(id: BSONObjectID)(implicit ec: ExecutionContext): Future[List[FeedItem]] =
     findById(id).map(_.map(_.items.toList).getOrElse(Nil))
 
-  def getItems(id: BSONObjectID, sliceN: Int): Future[List[FeedItem]] =
+  def getItems(id: BSONObjectID, sliceN: Int)(implicit ec: ExecutionContext): Future[List[FeedItem]] =
     getItemsQuery(id, Json.obj("items" -> Json.obj("$slice" -> sliceN)))
 
-  def getItems(id: BSONObjectID, skipValue: Int, limitValue: Int): Future[List[FeedItem]] =
+  def getItems(id: BSONObjectID, skipValue: Int, limitValue: Int)(implicit ec: ExecutionContext): Future[List[FeedItem]] =
     getItemsQuery(id, Json.obj("items" -> Json.obj("$slice" -> Json.arr(skipValue, limitValue))))
 
-  private def getItemsQuery(id: BSONObjectID, projection: JsObject): Future[List[FeedItem]] = {
+  private def getItemsQuery(id: BSONObjectID, projection: JsObject)(implicit ec: ExecutionContext): Future[List[FeedItem]] = {
     collection.find(
       selector = $id(id),
       projection = projection
