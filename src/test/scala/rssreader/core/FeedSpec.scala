@@ -4,14 +4,14 @@ import java.time.LocalDateTime
 
 import scala.io.Source
 
-import org.scalatest._
+import rssreader.utils.tests.TestSpec
 
-class FeedSpec extends FlatSpec with Matchers {
+class FeedSpec extends TestSpec {
 
   behavior of "Parsing valid RSS"
 
   it should "correctly parse fields" in {
-    val result = Feed(getClass.getResource("/exampleFeed.xml"))
+    val result = Feed.parse(fileExampleFeed)
     result shouldBe 'good
     result.get should have(
       'title ("Example Feed"),
@@ -24,10 +24,10 @@ class FeedSpec extends FlatSpec with Matchers {
   }
 
   it should "ignore optional fields when empty" in {
-    val result = Feed(getClass.getResource("/minimalFeed.xml"))
+    val result = Feed.parse(fileMinimalFeed)
     result shouldBe 'good
     result.get should have(
-      'title ("Example Feed"),
+      'title ("Minimal Feed"),
       'link ("http://www.example.com"),
       'description ("The latest stories from ..."),
       'items (Nil),
@@ -37,16 +37,16 @@ class FeedSpec extends FlatSpec with Matchers {
   }
 
   it should "create from url pointing to xml" in {
-    Feed(getClass.getResource("/exampleFeed.xml")) shouldBe 'good
+    Feed.parse(fileExampleFeed) shouldBe 'good
   }
 
   it should "create from xml string" in {
-    val str = Source.fromURL(getClass.getResource("/exampleFeed.xml")).mkString
-    Feed(str) shouldBe 'good
+    val str = Source.fromURL(fileExampleFeed).mkString
+    Feed.parse(str) shouldBe 'good
   }
 
   it should "parse all child items" in {
-    val result = Feed(getClass.getResource("/multipleItemFeed.xml"))
+    val result = Feed.parse(fileMultipleItemFeed)
     result.get.items should have size 2
   }
 
@@ -63,7 +63,7 @@ class FeedSpec extends FlatSpec with Matchers {
         |</rss>
       """.stripMargin
 
-    Feed(str) shouldBe 'bad
+    Feed.parse(str) shouldBe 'bad
   }
 
   it should "fail when empty link field" in {
@@ -78,7 +78,7 @@ class FeedSpec extends FlatSpec with Matchers {
         |</rss>
       """.stripMargin
 
-    Feed(str) shouldBe 'bad
+    Feed.parse(str) shouldBe 'bad
   }
 
   it should "fail when empty description field" in {
@@ -93,7 +93,7 @@ class FeedSpec extends FlatSpec with Matchers {
         |</rss>
       """.stripMargin
 
-    Feed(str) shouldBe 'bad
+    Feed.parse(str) shouldBe 'bad
   }
 
   it should "fail when an item cannot be parsed" in {
@@ -111,7 +111,7 @@ class FeedSpec extends FlatSpec with Matchers {
         |</rss>
       """.stripMargin
 
-    val result = Feed(str)
+    val result = Feed.parse(str)
     result shouldBe 'bad
     result.fold(
       good => fail(),
@@ -131,7 +131,7 @@ class FeedSpec extends FlatSpec with Matchers {
         |</rss>
       """.stripMargin
 
-    val result = Feed(str)
+    val result = Feed.parse(str)
     result shouldBe 'bad
     result.fold(
       good => fail(),

@@ -1,13 +1,14 @@
 package rssreader.core
 
-import java.net.URL
 import java.time.LocalDateTime
 
 import scala.xml._
 
 import org.scalactic.Accumulation._
 import org.scalactic._
-import rssreader.core.XMLExtensions._
+import play.api.libs.json.Json
+import rssreader.utils.XMLExtensions
+import rssreader.utils.XMLExtensions._
 
 case class FeedItem(title: String,
                     link: String,
@@ -19,11 +20,7 @@ case class FeedItem(title: String,
 
 
 object FeedItem {
-
-  def apply(u: URL): Or[FeedItem, Every[ErrorMessage]] = parse(XML.load(u))
-  def apply(s: String): Or[FeedItem, Every[ErrorMessage]] = parse(XML.loadString(s))
-  def apply(node: NodeSeq): Or[FeedItem, Every[ErrorMessage]] = parse(node)
-
+  implicit val itemFmt = Json.format[FeedItem]
 
   /**
    * Parse and validate a feed item from xml.

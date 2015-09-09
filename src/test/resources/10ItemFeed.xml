@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss>
+    <channel>
+        <title>Example 10 Item Feed</title>
+        <link>http://www.example.com</link>
+        <description>The latest stories from ...</description>
+        <item>
+            <title>Item 1</title>
+            <link>Link 1</link>
+            <description>Description 1</description>
+        </item>
+        <item>
+            <title>Item 2</title>
+            <link>Link 2</link>
+            <description>Description 2</description>
+        </item>
+        <item>
+            <title>Item 3</title>
+            <link>Link 3</link>
+            <description>Description 3</description>
+        </item>
+        <item>
+            <title>Item 4</title>
+            <link>Link 4</link>
+            <description>Description 4</description>
+        </item>
+        <item>
+            <title>Item 5</title>
+            <link>Link 5</link>
+            <description>Description 5</description>
+        </item>
+        <item>
+            <title>Item 6</title>
+            <link>Link 6</link>
+            <description>Description 6</description>
+        </item>
+        <item>
+            <title>Item 7</title>
+            <link>Link 7</link>
+            <description>Description 7</description>
+        </item>
+        <item>
+            <title>Item 8</title>
+            <link>Link 8</link>
+            <description>Description 8</description>
+        </item>
+        <item>
+            <title>Item 9</title>
+            <link>Link 9</link>
+            <description>Description 9</description>
+        </item>
+        <item>
+            <title>Item 10</title>
+            <link>Link 10</link>
+            <description>Description 10</description>
+        </item>
+    </channel>
+</rss>

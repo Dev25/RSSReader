@@ -1,4 +1,4 @@
-package rssreader.core
+package rssreader.utils
 
 import java.time.LocalDateTime
 
@@ -6,7 +6,7 @@ import scala.xml.XML
 
 import org.scalactic.One
 import org.scalatest._
-import rssreader.core.XMLExtensions._
+import rssreader.utils.XMLExtensions._
 
 class XMLExtensionSpec extends FlatSpec with Matchers {
 
