@@ -6,11 +6,10 @@ import scala.concurrent.Future
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import reactivemongo.bson.BSONObjectID
-
 import rssreader.core.Feed
 import rssreader.dao.FeedDao
-import rssreader.utils.tests.MongoTestSpec
 import rssreader.utils.MongoContext
+import rssreader.utils.tests.MongoTestSpec
 
 class FeedServiceSpec extends MongoTestSpec with MockitoSugar {
 

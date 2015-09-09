@@ -4,7 +4,6 @@ import java.time.LocalDateTime
 
 import scala.io.Source
 
-import org.scalatest._
 import rssreader.utils.tests.TestSpec
 
 class FeedSpec extends TestSpec {

@@ -2,7 +2,7 @@ package rssreader.actors
 
 import scala.concurrent.duration._
 
-import akka.actor.{ActorLogging, Actor}
+import akka.actor.{Actor, ActorLogging}
 import rssreader.service.FeedService
 
 object UpdateSchedulerActor {

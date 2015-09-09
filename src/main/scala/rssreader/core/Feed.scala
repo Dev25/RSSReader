@@ -9,9 +9,7 @@ import org.scalactic.Accumulation._
 import org.scalactic._
 import play.api.libs.json.Json
 import reactivemongo.bson.BSONObjectID
-import rssreader.utils.XMLExtensions
-import XMLExtensions._
-import play.modules.reactivemongo.json.ImplicitBSONHandlers.BSONObjectIDFormat
+import rssreader.utils.XMLExtensions._
 
 case class Feed(_id: BSONObjectID,
                 rssUrl: String,

@@ -6,7 +6,7 @@ import org.scalactic.Accumulation._
 import org.scalactic.{ErrorMessage, Every, Or}
 import play.api.libs.json.Json
 import rssreader.utils.XMLExtensions
-import XMLExtensions._
+import rssreader.utils.XMLExtensions._
 
 case class FeedImage(url: String,
                      title: String,

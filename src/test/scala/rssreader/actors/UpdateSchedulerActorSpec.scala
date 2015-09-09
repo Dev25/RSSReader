@@ -5,7 +5,6 @@ import scala.concurrent.duration._
 
 import akka.actor.Scheduler
 import akka.testkit._
-
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import rssreader.service.FeedService

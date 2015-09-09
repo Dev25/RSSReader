@@ -1,14 +1,14 @@
 package rssreader.dao
 
-import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{ExecutionContext, Future}
 
 import com.typesafe.scalalogging.LazyLogging
 import play.api.libs.json.{JsObject, Json}
 import play.modules.reactivemongo.json.ImplicitBSONHandlers._
-import reactivemongo.api.{ReadPreference, DB}
 import reactivemongo.api.commands.UpdateWriteResult
 import reactivemongo.api.indexes.{Index, IndexType}
+import reactivemongo.api.{DB, ReadPreference}
 import reactivemongo.bson.BSONObjectID
 import reactivemongo.extensions.json.dao.JsonDao
 import reactivemongo.extensions.json.dsl.JsonDsl._

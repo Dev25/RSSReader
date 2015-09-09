@@ -1,6 +1,7 @@
 package rssreader.utils
 
 import scala.concurrent.ExecutionContext.Implicits.global
+
 import reactivemongo.api.{DB, MongoDriver}
 
 object MongoContext {

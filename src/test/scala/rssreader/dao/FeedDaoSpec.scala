@@ -3,7 +3,7 @@ package rssreader.dao
 import scala.concurrent.ExecutionContext.Implicits.global
 
 import reactivemongo.api.commands.WriteResult
-import rssreader.core.{FeedItem, Feed}
+import rssreader.core.{Feed, FeedItem}
 import rssreader.utils.tests.MongoTestSpec
 
 
